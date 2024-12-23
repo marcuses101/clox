@@ -1,0 +1,23 @@
+version: '3'
+
+tasks:
+  build:
+    desc: Compile the project into an executable named 'program'
+    cmds:
+      - gcc -I. -Wall -Wextra -g -o program $(find . -name '*.c') 
+    sources:
+      - "**/*.c"
+      - "**/*.h"
+    outputs:
+      - program
+
+  run:
+    desc: Run the compiled program
+    cmds:
+      - ./program
+
+  build-run:
+    desc: Build and run the project
+    cmds:
+      - task: build
+      - task: run

@@ -1,6 +1,16 @@
 version: '3'
 
 tasks:
+  build-debug:
+    desc: Compile the project into an executable named 'program'
+    cmds:
+      - gcc -I. -Wall -Wextra -DDEBUG_TRACE_EXECUTION -g -o program $(find . -name '*.c') 
+    sources:
+      - "**/*.c"
+      - "**/*.h"
+    outputs:
+      - program
+
   build:
     desc: Compile the project into an executable named 'program'
     cmds:
@@ -20,4 +30,9 @@ tasks:
     desc: Build and run the project
     cmds:
       - task: build
+      - task: run
+  build-debug-run:
+    desc: Build and run the project
+    cmds:
+      - task: build-debug
       - task: run

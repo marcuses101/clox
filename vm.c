@@ -1,10 +1,14 @@
 #include "vm.h"
 #include "chunk.h"
+#include "compiler.h"
 #include "debug.h"
+#include "stack.h"
 #include "value.h"
 #include <stdint.h>
+#include <stdlib.h>
 
 VM vm;
+Stack stack;
 
 static InterpretResult run() {
 #define READ_BYTE() (*vm.ip++)
@@ -19,7 +23,7 @@ static InterpretResult run() {
   for (;;) {
 #ifdef DEBUG_TRACE_EXECUTION
     printf("          ");
-    for (Value *slot = vm.stack; slot < vm.stackTop; slot++) {
+    for (Value *slot = vm.stack->array; slot < vm.stack->stackTop; slot++) {
       printf("[ ");
       printValue(*slot);
       printf(" ]");
@@ -42,8 +46,8 @@ static InterpretResult run() {
       break;
     }
     case OP_NEGATE: {
-      *(vm.stackTop - 1) *= -1;
-      /* push(-pop()); */
+      /* *(vm.stackTop - 1) *= -1; */
+      push(-pop());
       break;
     }
     case OP_ADD: {
@@ -75,22 +79,19 @@ static InterpretResult run() {
 #undef READ_BYTE
 }
 
-static void resetStack() { vm.stackTop = vm.stack; }
+static void resetStack() { vm.stack->stackTop = vm.stack->array; }
 
-void initVM() { resetStack(); }
-void freeVM() {}
-InterpretResult interpret(Chunk *chunk) {
-  vm.chunk = chunk;
-  vm.ip = vm.chunk->code;
-  return run();
+void initVM() {
+  vm.stack = &stack;
+  initStack(vm.stack);
+}
+void freeVM() { freeStack(vm.stack); }
+
+InterpretResult interpret(const char *source) {
+  compile(source);
+  return INTERPRET_OK;
 }
 
-void push(Value value) {
-  *vm.stackTop = value;
-  vm.stackTop++;
-}
+void push(Value value) { stackPush(vm.stack, value); }
 
-Value pop() {
-  vm.stackTop--;
-  return *vm.stackTop;
-}
+Value pop() { return stackPop(vm.stack); }

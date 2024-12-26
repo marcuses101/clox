@@ -15,8 +15,8 @@ static InterpretResult run() {
 #define READ_CONSTANT() (vm.chunk->constants.values[READ_BYTE()])
 #define BINARY_OP(op)                                                          \
   do {                                                                         \
-    double a = pop();                                                          \
     double b = pop();                                                          \
+    double a = pop();                                                          \
     push(a op b);                                                              \
   } while (false)
 
@@ -39,8 +39,8 @@ static InterpretResult run() {
       break;
     }
     case OP_CONSTANT_LONG: {
-      int constantIndex = ((READ_BYTE() << 16) & 0xFF) |
-                          ((READ_BYTE() << 8) & 0xFF) | (READ_BYTE() & 0xFF);
+      int constantIndex =
+          ((READ_BYTE() << 16)) | ((READ_BYTE() << 8)) | (READ_BYTE());
       Value constant = vm.chunk->constants.values[constantIndex];
       push(constant);
       break;
@@ -84,11 +84,24 @@ static void resetStack() { vm.stack->stackTop = vm.stack->array; }
 void initVM() {
   vm.stack = &stack;
   initStack(vm.stack);
+  resetStack();
 }
-void freeVM() { freeStack(vm.stack); }
+void freeVM() {}
 
 InterpretResult interpret(const char *source) {
-  compile(source);
+  Chunk chunk;
+  initChunk(&chunk);
+
+  if (!compile(source, &chunk)) {
+    freeChunk(&chunk);
+    return INTERPRET_COMPILE_ERROR;
+  }
+  vm.chunk = &chunk;
+  vm.ip = vm.chunk->code;
+
+  InterpretResult result = run();
+
+  freeChunk(&chunk);
   return INTERPRET_OK;
 }
 

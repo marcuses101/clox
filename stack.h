@@ -15,6 +15,7 @@ Value stackPop(Stack *stack);
 void printStack(Stack *stack, const char* tag);
 void initStack(Stack* stack);
 void freeStack(Stack* stack);
+int stackSize(Stack *stack);
 
 
 #endif

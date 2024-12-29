@@ -13,7 +13,12 @@
 #define FREE_ARRAY(type, pointer, oldCount) \
     (type*)reallocate(pointer, sizeof(type) * (oldCount), 0)
 
+#define FREE(type, pointer) \
+    (type*)reallocate(pointer, sizeof(type), 0)
+
 
 void* reallocate(void* pointer, size_t oldSize, size_t newSize);
+void freeObjects();
+
 
 #endif

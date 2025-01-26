@@ -3,6 +3,7 @@
 
 #include "chunk.h"
 #include "stack.h"
+#include "table.h"
 #include "value.h"
 #include "object.h"
 
@@ -11,6 +12,8 @@ typedef struct {
   Chunk *chunk;
   uint8_t* ip;
   Stack *stack;
+  Table globals;
+  Table strings;
   Object* objects;
 } VM;
 

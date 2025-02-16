@@ -1,3 +1,15 @@
-for (var i = 0; i < 3; i = i + 1) {
-    print(i);
+var switchValue = "two";
+var x = 0;
+switch (switchValue) {
+    case "one": {
+        x = 1;
+    }
+    case "two": {
+        x = 2;
+    }
+    default: {
+        x = 69;
+    }
 }
+print("the number is:");
+print(x);

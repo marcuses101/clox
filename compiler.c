@@ -401,6 +401,44 @@ static void ifStatement() {
   patchJump(elseJump);
 }
 
+static void switchStatement() {
+  printf("switch statement \n");
+  consume(TOKEN_LEFT_PAREN, "Expect '(' after 'switch'.");
+  expression();
+  consume(TOKEN_RIGHT_PAREN, "Expect ')' after condition.");
+  consume(TOKEN_LEFT_BRACE, "Expect '{' after switch condition.");
+  int cases[UINT8_COUNT];
+  int caseCount = 0;
+  // check the cases
+  while (match(TOKEN_CASE)) {
+    if (caseCount >= UINT8_COUNT) {
+      error("Exceeded the maximum number of cases");
+    }
+    expression();
+    emitByte(OP_CASE);
+    int falseJump = emitJump(OP_JUMP_IF_FALSE);
+    emitByte(OP_POP);
+    consume(TOKEN_COLON, "Expect ':' after case expression.");
+    statement();
+    cases[caseCount++] = emitJump(OP_JUMP);
+    patchJump(falseJump);
+    emitByte(OP_POP);
+  }
+  // should jump to end if match is found
+
+  // check for default
+  if (match(TOKEN_DEFAULT)) {
+    consume(TOKEN_COLON, "Expect ':' after 'default'.");
+    statement();
+  }
+
+  for (int i = 0; i < caseCount; i++) {
+    patchJump(cases[i]);
+  }
+  emitByte(OP_POP); // remove the switch from the stack
+  consume(TOKEN_RIGHT_BRACE, "Expect closing '}'.");
+}
+
 static void printStatement() {
   expression();
   consume(TOKEN_SEMICOLON, "Expect ';' after value");
@@ -464,6 +502,8 @@ static void statement() {
     forStatement();
   } else if (match(TOKEN_IF)) {
     ifStatement();
+  } else if (match(TOKEN_SWITCH)) {
+    switchStatement();
   } else if (match(TOKEN_WHILE)) {
     whileStatement();
   } else if (match(TOKEN_LEFT_BRACE)) {
@@ -615,6 +655,10 @@ ParseRule rules[] = {
     [TOKEN_FOR] = {NULL, NULL, PREC_NONE},
     [TOKEN_FUN] = {NULL, NULL, PREC_NONE},
     [TOKEN_IF] = {NULL, NULL, PREC_NONE},
+    [TOKEN_SWITCH] = {NULL, NULL, PREC_NONE},
+    [TOKEN_CASE] = {NULL, NULL, PREC_NONE},
+    [TOKEN_DEFAULT] = {NULL, NULL, PREC_NONE},
+    [TOKEN_COLON] = {NULL, NULL, PREC_NONE},
     [TOKEN_NIL] = {literal, NULL, PREC_NONE},
     [TOKEN_OR] = {NULL, or_, PREC_OR},
     [TOKEN_PRINT] = {NULL, NULL, PREC_NONE},

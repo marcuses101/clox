@@ -95,7 +95,6 @@ static InterpretResult run() {
       break;
     }
     case OP_NEGATE: {
-      /* *(vm.stackTop - 1) *= -1; */
       if (!IS_NUMBER(peek(0))) {
         runtimeError("Operand must be a number");
         return INTERPRET_RUNTIME_ERROR;
@@ -146,6 +145,12 @@ static InterpretResult run() {
       Value b = pop();
       Value a = pop();
       push(BOOL_VAL(valuesEqual(a, b)));
+      break;
+    }
+    case OP_CASE: {
+      Value caseValue = pop();
+      Value switchValue = peek(0);
+      push(BOOL_VAL(valuesEqual(caseValue, switchValue)));
       break;
     }
     case OP_GREATER: {

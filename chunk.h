@@ -21,6 +21,7 @@ typedef enum {
     OP_DIVIDE,
     OP_NOT,
     OP_EQUAL,
+    OP_CASE,
     OP_GREATER,
     OP_LESS,
     OP_DEFINE_GLOBAL,

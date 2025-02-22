@@ -4,22 +4,20 @@
 #include "common.h"
 
 typedef struct {
-    int lineNumber;
-    int count;
+  int lineNumber;
+  int count;
 } Line;
 
 typedef struct {
-    int capacity;
-    int count;
-    Line* lineNumbers;
-    int lastLineNumber;
+  int capacity;
+  int count;
+  Line *lineNumbers;
+  int lastLineNumber;
 } Lines;
 
-
-
-void initLines(Lines* lines);
-void addLineNumberOccurence(Lines* lines, int lineNumber);
-void freeLines(Lines* lines);
-int getLine(Lines* lines, int instructionIndex);
+void initLines(Lines *lines);
+void addLineNumberOccurence(Lines *lines, int lineNumber);
+void freeLines(Lines *lines);
+int getLine(Lines *lines, int instructionIndex);
 
 #endif

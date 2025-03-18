@@ -24,13 +24,16 @@ void printStack(Stack *stack, const char *tag) {
 }
 
 void stackPush(Stack *stack, Value value) {
-  if ((stack->stackTop - stack->array) >= stack->capacity) {
+  int stackSize = stack->stackTop - stack->array;
+  if (stackSize >= stack->capacity) {
     int oldCapacity = stack->capacity;
     stack->capacity = GROW_CAPACITY(oldCapacity);
     stack->array =
         GROW_ARRAY(Value, stack->array, oldCapacity, stack->capacity);
     if (stack->stackTop == NULL) {
       stack->stackTop = stack->array;
+    } else {
+      stack->stackTop = stack->array + stackSize;
     }
   }
   *stack->stackTop = value;

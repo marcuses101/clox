@@ -1,15 +1,9 @@
-var switchValue = "two";
-var x = 0;
-switch (switchValue) {
-    case "one": {
-        x = 1;
-    }
-    case "two": {
-        x = 2;
-    }
-    default: {
-        x = 69;
-    }
+fun fib(n) {
+  if (n < 2) return n;
+  return fib(n - 2) + fib(n - 1);
 }
-print("the number is:");
-print(x);
+
+var start = clock();
+print fib(3);
+print clock() - start;
+

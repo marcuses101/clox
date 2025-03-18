@@ -1,9 +1,10 @@
-fun fib(n) {
-  if (n < 2) return n;
-  return fib(n - 2) + fib(n - 1);
+fun add(a,b) {
+    print(a + b);
 }
 
+return "test";
+
 var start = clock();
-print fib(3);
+add(2,5);
 print clock() - start;
 

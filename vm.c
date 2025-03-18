@@ -91,7 +91,7 @@ static bool call(ObjectFunction *function, int argCount) {
   CallFrame *frame = &vm.frames[vm.frameCount++];
   frame->function = function;
   frame->ip = function->chunk.code;
-  frame->slots = vm.stack->stackTop - argCount - 1;
+  frame->frameOffset = vm.stack->stackTop - vm.stack->array - argCount - 1;
   return true;
 }
 
@@ -252,13 +252,15 @@ static InterpretResult run() {
       break;
     }
     case OP_GET_LOCAL: {
-      uint8_t slot = READ_BYTE();
-      push(frame->slots[slot]);
+      uint8_t localOffset = READ_BYTE();
+      uint8_t stackOffset = frame->frameOffset + localOffset;
+      push(vm.stack->array[stackOffset]);
       break;
     }
     case OP_SET_LOCAL: {
-      uint8_t slot = READ_BYTE();
-      frame->slots[slot] = peek(0);
+      uint8_t localOffset = READ_BYTE();
+      uint8_t stackOffset = frame->frameOffset + localOffset;
+      vm.stack->array[stackOffset] = peek(0);
       break;
     }
     case OP_SET_GLOBAL: {
@@ -308,9 +310,7 @@ static InterpretResult run() {
         pop();
         return INTERPRET_OK;
       }
-      // if the stack was reallocated frame->slots no longer points to the
-      // correct slot. hmmmm....
-      vm.stack->stackTop = frame->slots;
+      vm.stack->stackTop = &vm.stack->array[frame->frameOffset];
       push(result);
       frame = &vm.frames[vm.frameCount - 1];
       break;
